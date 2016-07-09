@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui" template="/templates/default.xhtml">
+	<ui:define name="content">
+		<h:form id="mainForm">
+			<h:panelGroup id="dynaGroup">
+				<p:growl id="messages" />
+				<pe:dynaForm id="dynaForm" value="#{userManager.formModel}"
+					var="data" columnClasses="label-container, field-container">
+					<pe:dynaFormControl type="hidden" for="hidden">
+						<p:inputText id="hidden" value="#{data.value}" type="hidden"
+							required="#{data.required}" />
+					</pe:dynaFormControl>
+					<pe:dynaFormControl type="email" for="email">
+						<p:inputText id="email" value="#{data.value}"
+							required="#{data.required}" />
+					</pe:dynaFormControl>
+					<pe:dynaFormControl type="input" for="txt">
+						<p:inputText id="txt" value="#{data.value}"
+							required="#{data.required}" />
+					</pe:dynaFormControl>
+					<pe:dynaFormControl type="password" for="pwd">
+						<p:password id="pwd" value="#{data.value}"
+							required="#{data.required}" />
+					</pe:dynaFormControl>
+					<pe:dynaFormControl type="booleancheckbox" for="chbox">
+						<p:selectBooleanCheckbox id="chbox" value="#{data.value}" />
+					</pe:dynaFormControl>
+					<f:facet name="buttonBar">
+						<p:commandButton action="#{userManager.save()}" process="dynaForm"
+							ajax="true" value="Save"
+							update=":mainForm:messages,:tableForm:userTable, :mainForm:dynaGroup" />
+						<p:commandButton type="reset" value="Reset"
+							style="margin-left: 5px;" />
+					</f:facet>
+				</pe:dynaForm>
+			</h:panelGroup>
+		</h:form>
+		<h:form id="tableForm">
+			<p:dataTable id="userTable" value="#{userManager.lazyDataModel}"
+				var="u" emptyMessage="Empty" styleClass="order-table"
+				selection="#{userManager.selectedUsers}"
+				headerClass="order-table-header" lazy="true" rowKey="#{u.id}"
+				rows="10"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="5,10,15"
+				rowClasses="order-table-odd-row,order-table-even-row">
+				<p:column selectionMode="multiple"
+					style="width:16px;text-align:center" />
+				<p:columns value="#{userManager.columns}" var="column"
+					columnIndexVar="colIndex" sortBy="#{u[column.property]}"
+					filterBy="#{u[column.property]}">
+					<f:facet name="header">
+						<h:outputText value="#{column.header}" />
+					</f:facet>
+					<h:outputText value="#{u[column.property]}" />
+				</p:columns>
+			</p:dataTable>
+			<p:commandButton value="Delete" update="userTable"
+				action="#{userManager.deleteSelected()}" />
+		</h:form>
+	</ui:define>
+	<h:outputStylesheet id="dynaFormCSS">  
+    /* note: trick with colspan is needed for IE8 */  
+    .pe-dynaform-cell input,  
+    .pe-dynaform-cell textarea,  
+    .pe-dynaform-cell[colspan="1"] input,  
+    .pe-dynaform-cell[colspan="1"] textarea {  
+        width: 150px;  
+    }  
+  
+    /* note: trick with colspan is needed for IE8 */  
+    .pe-dynaform-cell.calendar input,  
+    .pe-dynaform-cell[colspan="1"].calendar input {  
+        width: 120px;  
+    }  
+  
+    .pe-dynaform-cell .ui-selectonemenu {  
+        width: 134px;  
+    }  
+      
+    .label-container {  
+        font-weight: bold;  
+    }  
+      
+    .field-container input {  
+        text-transform: uppercase;  
+    }  
+</h:outputStylesheet>
+</ui:composition>
