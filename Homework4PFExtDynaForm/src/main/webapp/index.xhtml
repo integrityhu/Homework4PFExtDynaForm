@@ -30,6 +30,13 @@
 					<pe:dynaFormControl type="booleancheckbox" for="chbox">
 						<p:selectBooleanCheckbox id="chbox" value="#{data.value}" />
 					</pe:dynaFormControl>
+					<pe:dynaFormControl type="select" for="select">
+						<p:selectOneMenu id="select" value="#{data.value}"
+							required="#{data.required}">
+							<f:selectItems var="s" value="#{userManager[data.propertyName]}"
+								itemLabel="#{s[data.detailLabelfield]}" itemValue="#{s}"/>
+						</p:selectOneMenu>
+					</pe:dynaFormControl>
 					<f:facet name="buttonBar">
 						<p:commandButton action="#{userManager.save()}" process="dynaForm"
 							ajax="true" value="Save"

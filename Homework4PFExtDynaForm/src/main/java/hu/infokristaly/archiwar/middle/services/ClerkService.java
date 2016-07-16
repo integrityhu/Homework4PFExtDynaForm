@@ -4,6 +4,7 @@
 package hu.infokristaly.archiwar.middle.services;
 
 import hu.infokristaly.archiwar.back.domain.Clerk;
+import hu.infokristaly.archiwar.back.domain.Usergroup;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -174,4 +175,13 @@ public class ClerkService extends BasicService<Clerk> implements Serializable {
 
 	}
 
+	@SuppressWarnings("unchecked")
+    public List<Usergroup> findGroups() {
+	    Query q = em.createQuery("from Usergroup");
+	    return q.getResultList();
+	}
+
+    public void persistGroup(Usergroup g) {
+        em.persist(g);
+    }
 }

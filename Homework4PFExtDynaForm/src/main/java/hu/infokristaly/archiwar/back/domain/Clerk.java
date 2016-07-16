@@ -44,6 +44,9 @@ public class Clerk implements java.io.Serializable {
     @EntityInfo(info="Enabled", weight=4, editor="booleancheckbox")
     private Boolean enabled;
 
+    @EntityInfo(info="Default user group", detailLabelfield="usergroup", weight=5, required=true, editor="select")
+    private Usergroup usergroup;
+
     public Clerk() {
     }
 
@@ -136,6 +139,14 @@ public class Clerk implements java.io.Serializable {
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
+
+    public Usergroup getUsergroup() {
+        return usergroup;
+    }
+
+    public void setUsergroup(Usergroup usergroup) {
+        this.usergroup = usergroup;
+    }
 	
 	
 

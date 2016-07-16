@@ -10,6 +10,7 @@ public @interface EntityInfo {
     String info() default "";
     int weight() default 1;
     String editor() default "";
+    String detailLabelfield() default "";
     boolean required() default false;
     Class<?> expected() default Exception.class;
 }

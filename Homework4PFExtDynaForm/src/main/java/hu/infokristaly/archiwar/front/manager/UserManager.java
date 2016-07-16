@@ -1,6 +1,7 @@
 package hu.infokristaly.archiwar.front.manager;
 
 import hu.infokristaly.archiwar.back.domain.Clerk;
+import hu.infokristaly.archiwar.back.domain.Usergroup;
 import hu.infokristaly.archiwar.front.annotations.EntityInfo;
 import hu.infokristaly.archiwar.middle.services.ClerkService;
 
@@ -47,6 +48,8 @@ public class UserManager implements Serializable {
 	private List<ColumnModel> columns;
 	
     private List<Clerk> selectedUsers;
+    
+    private List<Usergroup> usergroup;
 
     private LazyDataModel<Clerk> lazyDataModel;
     
@@ -59,15 +62,20 @@ public class UserManager implements Serializable {
     @PostConstruct
     public void init() {
         log.log(Level.INFO, "["+this.getClass().getName()+"] constructor finished.");
+        Usergroup g1 = new Usergroup("admin");
+        Usergroup g2 = new Usergroup("clerk");
+        userService.persistGroup(g1);
+        userService.persistGroup(g2);
+        usergroup =  userService.findGroups();
         initModel();
     }
 
     private void initModel() {
         columns = new ArrayList<ColumnModel>();
         formModel = new DynaFormModel();
-        DynaFormRow row;// = formModel.createRegularRow();
-        //FieldModel model = new FieldModel("photo","hidden",false);        
-        DynaFormControl control;// = row.addControl(model,"hidden");
+        DynaFormRow row = formModel.createRegularRow();
+        FieldModel model = new FieldModel("photo","hidden",false);        
+        DynaFormControl control = row.addControl(model,"hidden");
         
         Class<?> clazz = Clerk.class;
         
@@ -79,7 +87,11 @@ public class UserManager implements Serializable {
 								
 				row = formModel.createRegularRow();
 				DynaFormLabel label = row.addLabel(entityInfo.info());
-				control = row.addControl(new FieldModel(field.getName(), entityInfo.info(), entityInfo.required()),entityInfo.editor());				
+				FieldModel fmodel = new FieldModel(field.getName(), entityInfo.info(), entityInfo.required());
+				if (!entityInfo.detailLabelfield().isEmpty()) {
+				    fmodel.setDetailLabelfield(entityInfo.detailLabelfield());
+				}
+				control = row.addControl(fmodel,entityInfo.editor());				
 				label.setForControl(control);
 			}
 		}
@@ -203,7 +215,7 @@ public class UserManager implements Serializable {
         }        
     }
 
-	public String save() {
+	public void save() {
 		List<FieldModel> fields = getProperties();
 		
 		fields.forEach(f -> {try {
@@ -242,7 +254,7 @@ public class UserManager implements Serializable {
 				FacesContext.getCurrentInstance().addMessage(null, message);
 			}
 		}
-		return null;
+		
 	}
 	
 	public void deleteSelected() {		
@@ -250,6 +262,14 @@ public class UserManager implements Serializable {
 			userService.removeSystemUser(c);
 		};
 	}
+
+    public List<Usergroup> getUsergroup() {
+        return usergroup;
+    }
+
+    public void setUsergroup(List<Usergroup> usergroup) {
+        this.usergroup = usergroup;
+    }
 
     static public class ColumnModel implements Serializable {
     	 
@@ -280,6 +300,7 @@ public class UserManager implements Serializable {
 		private String propertyName;
         private Object value;
         private boolean required;
+        private String detailLabelfield;
  
         public FieldModel(String propertyName,String label, boolean required) {
         	this.propertyName = propertyName;
@@ -318,6 +339,14 @@ public class UserManager implements Serializable {
 		public void setRequired(boolean required) {
 			this.required = required;
 		}
+
+        public String getDetailLabelfield() {
+            return detailLabelfield;
+        }
+
+        public void setDetailLabelfield(String detailLabelfield) {
+            this.detailLabelfield = detailLabelfield;
+        }
  
     }
 
